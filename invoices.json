@@ -1,11 +1,13 @@
-[
-  {
-    "id": 1691143148123,
-    "user": "sejahtera12@gmail.com",
-    "client": "PT SEJAHTERA ID",
-    "amount": "500000",
-    "dueDate": "2025-08-10",
-    "description": "Invoice untuk jasa desain",
-    "createdAt": "2025-08-03T12:34:56.789Z"
-  }
-]
+{
+  "invoices": [
+    {
+      "id": 1691143148123,
+      "user": "sejah12@gmail.com",
+      "client": "PT SEJAHTERA ID",
+      "amount": "500000",
+      "dueDate": "2025-08-10",
+      "description": "Invoice desain grafis",
+      "createdAt": "2025-08-03T12:34:56.789Z"
+    }
+  ]
+}
