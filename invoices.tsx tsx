@@ -1,0 +1,71 @@
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.NEXT_PUBLIC_JWT_SECRET || 'supersecretkey';
+
+interface Invoice {
+  id: number;
+  client: string;
+  amount: string;
+  dueDate: string;
+  description: string;
+  createdAt: string;
+}
+
+export default function InvoiceListPage() {
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return router.push('/login');
+
+    try {
+      jwt.verify(token, JWT_SECRET); // just to confirm token is valid
+    } catch {
+      localStorage.removeItem('token');
+      return router.push('/login');
+    }
+
+    fetch('/api/invoice/list', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setInvoices(data.invoices || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Failed to fetch invoices:', err);
+        setLoading(false);
+      });
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-6">
+      <h1 className="text-2xl font-bold mb-4">Daftar Invoice</h1>
+
+      {loading ? (
+        <p>Loading...</p>
+      ) : invoices.length === 0 ? (
+        <p>Tidak ada invoice ditemukan.</p>
+      ) : (
+        <div className="space-y-4">
+          {invoices.map((inv) => (
+            <div key={inv.id} className="bg-white p-4 rounded shadow">
+              <p><strong>Klien:</strong> {inv.client}</p>
+              <p><strong>Jumlah:</strong> Rp{inv.amount}</p>
+              <p><strong>Jatuh Tempo:</strong> {inv.dueDate}</p>
+              <p><strong>Keterangan:</strong> {inv.description}</p>
+              <p className="text-sm text-gray-500 mt-2">Dibuat: {new Date(inv.createdAt).toLocaleString()}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
